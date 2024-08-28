@@ -1,6 +1,3 @@
-Sure! Here's the complete `README.md` file content, including the "Usage" section, formatted for you to copy and paste directly:
-
-```markdown
 # Cricket Match TRP Prioritization
 
 This repository contains a Python-based project for prioritizing cricket matches using a TRP (Television Rating Points) scoring system. The project includes data processing, visualization, and a Streamlit web application for user interaction.
