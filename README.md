@@ -1,63 +1,142 @@
-This repository contains the code and documentation for prioritizing cricket matches based on TRP (Television Rating Points) using data analysis and visualization. It includes both a Jupyter Notebook for in-depth analysis and a Streamlit application for a user-friendly interface.
+Sure! Here's the complete `README.md` file content, including the "Usage" section, formatted for you to copy and paste directly:
+
+```markdown
+# Cricket Match TRP Prioritization
+
+This repository contains a Python-based project for prioritizing cricket matches using a TRP (Television Rating Points) scoring system. The project includes data processing, visualization, and a Streamlit web application for user interaction.
 
 ## Table of Contents
 
 1. [Introduction](#introduction)
-2. [Data Analysis and Approach](#data-analysis-and-approach)
-   - [Data Understanding](#data-understanding)
-   - [Data Preprocessing](#data-preprocessing)
-   - [TRP Calculation](#trp-calculation)
-   - [Data Visualization](#data-visualization)
-3. [Streamlit Application](#streamlit-application)
-   - [Features](#features)
-   - [Setup and Usage](#setup-and-usage)
-4. [Jupyter Notebook](#jupyter-notebook)
-5. [How to Use This Repository](#how-to-use-this-repository)
-   - [Requirements](#requirements)
-   - [Installation](#installation)
+2. [Features](#features)
+3. [Installation](#installation)
+4. [Usage](#usage)
    - [Running the Streamlit App](#running-the-streamlit-app)
-   - [Running the Jupyter Notebook](#running-the-jupyter-notebook)
+   - [Using the Application](#using-the-application)
+5. [Data Processing and Analysis](#data-processing-and-analysis)
+   - [Handling Duplicates](#handling-duplicates)
+   - [TRP Priority Calculation](#trp-priority-calculation)
+   - [Key Visualizations](#key-visualizations)
+6. [Streamlit Application](#streamlit-application)
+   - [Uploading the Data](#uploading-the-data)
+   - [Top 10 Matches](#top-10-matches)
+   - [Visualizations](#visualizations)
+7. [Contributing](#contributing)
+8. [License](#license)
 
 ## Introduction
 
-The objective of this project is to develop a system that prioritizes cricket matches based on various factors, such as rivalry, match status, time of the match, and others, to maximize user engagement. The project consists of a detailed analysis and a web application where users can upload their data and receive prioritized matches along with visualizations.
+The project focuses on prioritizing cricket matches based on several factors to determine their potential for high television ratings (TRP). This is useful for broadcasters, analysts, and marketers to understand which matches are likely to draw the most viewers.
 
-## Data Analysis and Approach
+## Features
 
-### Data Understanding
+- **Data Processing**: Cleans and processes cricket match data from an Excel file.
+- **TRP Calculation**: Assigns a TRP priority score to each match based on factors like series type, rivalry, status, teams, and match format.
+- **Duplicate Handling**: Removes redundant matches to ensure accurate analysis.
+- **Visualization**: Generates insightful visualizations to highlight key trends and insights.
+- **Streamlit Application**: A user-friendly web interface for uploading data, viewing prioritized matches, and visualizing trends.
 
-The dataset provided contains information about cricket matches, including details like series type, rivalry status, match status, teams involved, match time, match category, format, and more. The goal is to calculate a TRP priority score for each match based on these attributes.
+## Installation
 
-### Data Preprocessing
+To set up the project on your local machine, follow these steps:
 
-- **Handling Missing Data**: Imputation and exclusion techniques are used to handle missing values.
-- **Normalization and Capping**: To prevent any single factor from disproportionately affecting the TRP score, normalization and capping strategies are applied where necessary.
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/devkartikrathi/CricRadio.git
+   cd cricket-trp-prioritization
+   ```
+
+2. **Install Dependencies**:
+   Ensure you have Python installed. Install the necessary packages using pip:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+## Usage
+
+### Running the Streamlit App
+
+1. **Run the Application**:
+   ```bash
+   streamlit run app.py
+   ```
+
+2. **Open the App**:
+   The app will open in your default web browser. You can also access it via the link provided in the terminal.
+
+### Using the Application
+
+- **Upload Data**: Use the file uploader to upload your Excel file containing cricket match data.
+- **View Top Matches**: The app calculates the TRP priority and displays the top 10 matches based on their scores.
+- **Visualize Trends**: Explore various charts that provide insights into the data.
+
+## Data Processing and Analysis
+
+### Handling Duplicates
+
+Before processing, the data is cleaned by removing duplicate rows based on key criteria such as date, time, teams, gender, and match type.
+
+```python
+df = df.drop_duplicates(subset=['Date', 'Time (IST)', 'Team A', 'Team B', 'Gender', 'Match Type'], keep='first')
+```
 
 ### TRP Priority Calculation
 
-The TRP priority score is calculated using a weighted sum of various factors:
+TRP priority is calculated based on the following factors:
 
 - **Series Type**: Higher priority for major series like the World Cup.
 - **Rivalry**: Iconic rivalries like Ind vs Pak receive higher priority.
 - **Status**: Live matches are prioritized over upcoming or completed matches.
 - **Teams**: Matches involving top teams are prioritized.
-- **Time**: Matches played during peak viewing times are given higher priority.
-- **Other Factors**: Match category, format, league status, and gender also influence the TRP priority.
+- **Match Category**: International matches are prioritized over domestic ones.
+- **Format**: Different formats (T20, ODI, Test) have varying priorities.
+- **Is League**: Matches within a league or major event get higher priority.
+- **Gender**: Male matches typically have different priorities compared to female matches.
 
-### Edge Cases and Priority Collision Handling
+### Key Visualizations
 
-- **Edge Cases**: Scenarios such as missing data, ties in TRP scores, and outliers are handled through imputation, secondary sorting, or randomization.
-- **Priority Collision**: Conflicts between different factors are resolved using a weighted scoring system and custom rules for special cases like finals.
+1. **Dates with Most High-Priority Matches**:
+   - A bar plot that shows which dates have the highest concentration of high-priority matches.
 
-### Data Visualization
+   ```python
+   date_priority = df.groupby('Date')['TRP Priority'].sum().reset_index()
+   date_priority = date_priority.sort_values(by='TRP Priority', ascending=True)
+   sns.barplot(x='Date', y='TRP Priority', data=date_priority)
+   ```
 
-Visualizations are included to provide insights into the distribution of TRP priority scores, top matches, and TRP priority by match status or teams.
+2. **TRP Priority Distribution**:
+   - A histogram showing how TRP scores are distributed across all matches.
+
+   ```python
+   sns.histplot(df['TRP Priority'], bins=20, kde=True)
+   ```
+
+3. **Average TRP by Team**:
+   - A bar plot showing the average TRP scores for different teams.
+
+   ```python
+   df['Team'] = df[['Team A', 'Team B']].apply(lambda x: ' vs '.join(x), axis=1)
+   team_trp = df.head(20).groupby('Team')['TRP Priority'].mean().sort_values()
+   sns.barplot(x=team_trp, y=team_trp.index)
+   ```
 
 ## Streamlit Application
 
-### Features
+### Uploading the Data
 
-- **File Upload**: Users can upload an Excel file containing match data.
-- **TRP Calculation**: Automatically calculates the TRP priority for each match.
-- **Visualization**: Generates visualizations such as TRP distribution, top matches, and TRP by match status.
-- **Filtered Output**: Provides a prioritized list of matches based on the TRP score.
+Users can upload an `.xlsx` file containing cricket match data. The app processes this file and displays the top 10 matches based on the calculated TRP priority.
+
+### Top 10 Matches
+
+The app lists the top 10 matches by TRP priority, allowing users to quickly identify the most important matches.
+
+### Visualizations
+
+The app includes several visualizations to help users explore the data, including:
+
+- **Distribution of TRP Scores**
+- **TRP Priority by Match Status**
+- **Average TRP by Team**
+- **Dates with Most High-Priority Matches**
+
+These visualizations provide insights into which matches and factors are driving viewership.
